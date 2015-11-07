@@ -11,11 +11,10 @@ class peer_send(threading.Thread):
     def run(self):
         while True:
             Userinput = raw_input("\nWhich RFC you want? (eg: rfc132) (obtain the list by \"list\", exit with \"disconnect\")")
-            if Userinput == "disconnect":
-                '''
-                Peer.sendto(Userinput, (ServerIP,ServerPort))
-                print str(Userinput)
-                '''
+            if (Userinput == "disconnect" or Userinput == 'q'):
+                disconnectMessage = "DISCONNECT THIS P2P-CI/1.0\nHost: " + str(myip) + "\nPort: " + str(UploadPort)
+                Peer.sendto(disconnectMessage, (ServerIP,ServerPort))
+                #print str(Userinput)
                 #Peer.close()
                 #sys.exit()
                 stopped = threading.Event()
@@ -31,7 +30,7 @@ class peer_send(threading.Thread):
                 print Answer
             elif Userinput == "add":
                 RFCNumber = raw_input('RFC Number: ')
-                listmessage = "ADD RFC " + RFCNumber + " P2P-CI/1.0\nHost: " + str(myip) + "\nPort: " + str(UploadPort)+ "\nTitle: " + RFCTitle  + "\n"
+                listmessage = "ADD RFC " + RFCNumber + " P2P-CI/1.0\nHost: " + str(myip) + "\nPort: " + str(UploadPort)+ "\nTitle: " + RFCTitle + "\n"
                 Peer.sendto(listmessage, (ServerIP,ServerPort))
                 Answer=Peer.recv(4096)
                 print Answer
@@ -113,7 +112,7 @@ for subdir, dirs, files in os.walk('./'):
         if file.endswith(".txt"):
             name,ext = os.path.splitext(file)
             RFCnumber = name[3:]
-            RFCTitle = " Some RFC title"
+            RFCTitle = " Some RFC number"
             filemessage = "ADD " + "RFC " + RFCnumber + " P2P-CI/1.0" + \
                       "\nHost: " + str(myip) + "\nPort: " + str(UploadPort) + "\nTitle: Some RFC number" + str(a)
             a += 1;

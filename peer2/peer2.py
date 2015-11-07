@@ -11,11 +11,9 @@ class peer_send(threading.Thread):
     def run(self):
         while True:
             Userinput = raw_input("\nWhich RFC you want? (eg: rfc132) (obtain the list by \"list\", exit with \"disconnect\")")
-            if Userinput == "disconnect":
-                '''
-                Peer.sendto(Userinput, (ServerIP,ServerPort))
-                print str(Userinput)
-                '''
+            if (Userinput == "disconnect" or Userinput == 'q'):
+                disconnectMessage = "DISCONNECT THIS P2P-CI/1.0\nHost: " + str(myip) + "\nPort: " + str(UploadPort)
+                Peer.sendto(disconnectMessage, (ServerIP,ServerPort))
                 #Peer.close()
                 #sys.exit()
                 stopped = threading.Event()
@@ -115,7 +113,7 @@ for subdir, dirs, files in os.walk('./'):
             RFCnumber = name[3:]
             RFCTitle = " Some RFC title"
             filemessage = "ADD " + "RFC " + RFCnumber + " P2P-CI/1.0" + \
-                      "\nHost: " + str(myip) + "\nPort: " + str(UploadPort) + "\nTitle: RFC number" + str(a)
+                      "\nHost: " + str(myip) + "\nPort: " + str(UploadPort) + "\nTitle: Some RFC number" + str(a)
             a += 1;
             Peer.sendto(filemessage, (ServerIP,ServerPort)) # Send request
             print filemessage
