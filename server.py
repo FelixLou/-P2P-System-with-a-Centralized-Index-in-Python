@@ -1,10 +1,10 @@
 from thread import *
 from socket import *
+from sys import *
+import threading
 
-
-version = "P2P-CI/1.0"
-status = "200 OK"
-
+#class Peers(threading.Thread):
+#	def run(self, connectionSocket):
 def handle_client(connectionSocket):
 	while(1):
 		try:
@@ -54,7 +54,7 @@ def handle_client(connectionSocket):
 
 			if(first_line[0].lower() == "add"):
 				rfcs.insert(0,first_line[2])#RFC number
-				rfcs.insert(1,forth_line[1])#title
+				rfcs.insert(1,forth_line[1:])#title
 				rfcs.insert(2,second_line[1])#ip address
 				add_info = version + " "+ status + "\n"
 				add_info += "RFC "+first_line[2]+ " "+ forth_line[1]+" "+third_line[1]
@@ -64,8 +64,11 @@ def handle_client(connectionSocket):
 				rfcs_len = len(rfcs)
 				print first_line[2]
 				for i in xrange(0,rfcs_len,3):
+					#if rfc number
 					if(first_line[2] == rfcs[i]):
-						rfc_info += "RFC "+ rfcs[i]+" "+rfcs[i + 2]+ " " +  "\n"
+						#ipaddress_index + 1 is the peer's port number 
+						port_number_index = peers.index(rfcs[i + 2]) + 1
+						rfc_info += "\n" + "RFC "+ rfcs[i]+" "+rfcs[i + 2]+ " " + peers[port_number_index]
 				if(rfc_info == version + " "+ status):
 					connectionSocket.send(version + " 404 Not Found")
 				else:
@@ -102,7 +105,15 @@ def handle_client(connectionSocket):
 			print "after: ",len(peers)
 			print len(rfcs)
 			return
-
+'''
+class Command(threading.Thread):
+	def run(self):
+		command = raw_input('Waiting for command:')
+		if(command == 'quit' or command == 'q'):
+			raise SystemExit
+'''
+version = "P2P-CI/1.0"
+status = "200 OK"
 serverPort = 7734
 serverSocket = socket(AF_INET,SOCK_STREAM) 
 serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
@@ -113,6 +124,10 @@ peers = []; #initiate a list of peers
 rfcs = []; #initiate a list of RCFs
 while 1:
 	connectionSocket, addr = serverSocket.accept()
+	#talkWithPeers = Peers(connectionSocket)
+	#waitForCommand = Command()
+	#talkWithPeers.start()
+	#waitForCommand.start()
 	start_new_thread(handle_client, (connectionSocket,))
 
 
